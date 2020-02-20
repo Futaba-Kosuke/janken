@@ -34,6 +34,30 @@ def hands_to_int(user_hand):
 def select_bot_hand():
     return random.randint(0, 2)
 
+def judge(user_hand, bot_hand):
+    judge_num = (user_hand - bot_hand) % 3
+    result = ''
+
+    if bot_hand == 0:
+        result += 'グー！\n'
+    elif bot_hand == 1:
+        result += 'チョキ！\n'
+    elif bot_hand == 2:
+        result += 'パー！\n'
+    else:
+        result += '？？？\n'
+
+    if judge_num == 0:
+        result += 'あいこ！'
+    elif judge_num == 1:
+        result += '貴方の負け！'
+    elif judge_num == 2:
+        result += '貴方の勝ち！'
+    else:
+        result += 'ERROR'
+
+    return result
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -54,7 +78,8 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     # message = hands_to_int(event.message.text)
-    message = str(select_bot_hand())
+    # message = str(select_bot_hand())
+    message = judge(hands_to_int(event.message.text), select_bot_hand())
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=message))
