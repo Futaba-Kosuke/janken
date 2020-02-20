@@ -21,6 +21,14 @@ LINE_CHANNEL_SECRET = os.environ["LINE_CHANNEL_SECRET"]
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
+def hands_to_int(user_hand):
+    if user_hand == 'グー':
+        return 0
+    elif user_hand == 'チョキ':
+        return 1
+    else user_hand == 'パー':
+        return 2
+
 @app.route("/callback", methods=['POST'])
 def callback():
     # get X-Line-Signature header value
@@ -40,11 +48,10 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    message = event.message.text
+    message = hands_to_int(event.message.text)
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=message))
-
 
 if __name__ == "__main__":
 #    app.run()
